@@ -1,8 +1,11 @@
 package com.example.cc_box.Auth;
 
+import com.example.cc_box.Utils.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.google.firebase.auth.FirebaseAuthException;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -11,20 +14,25 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/signup")
-    public String signUp(@RequestParam String email, @RequestParam String password) {
+    public ResponseEntity<ApiResponse> signUp(
+            @RequestParam String email,
+            @RequestParam String password
+    ) {
         try {
-            return authService.signUp(email, password);
+            String result = authService.signUp(email, password);
+            return ResponseEntity.ok(new ApiResponse(true, "User created successfully", result));
         } catch (FirebaseAuthException e) {
-            return "Error: " + e.getMessage();
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error: " + e.getMessage(), null));
         }
     }
 
     @PostMapping("/verify")
-    public String verifyToken(@RequestParam String idToken) {
+    public ResponseEntity<ApiResponse> verifyToken(@RequestParam String idToken) {
         try {
-            return authService.verifyToken(idToken);
+            String result = authService.verifyToken(idToken);
+            return ResponseEntity.ok(new ApiResponse(true, "Token verified successfully", result));
         } catch (FirebaseAuthException e) {
-            return "Error: " + e.getMessage();
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error: " + e.getMessage(), null));
         }
     }
 }
