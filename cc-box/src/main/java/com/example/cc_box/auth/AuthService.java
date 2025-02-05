@@ -1,4 +1,4 @@
-package com.example.cc_box.Auth;
+package com.example.cc_box.auth;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
