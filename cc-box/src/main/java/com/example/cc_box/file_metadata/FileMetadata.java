@@ -2,9 +2,10 @@ package com.example.cc_box.file_metadata;
 
 import com.google.cloud.firestore.annotation.DocumentId;
 import com.google.cloud.firestore.annotation.ServerTimestamp;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
-
+@Component
 public class FileMetadata {
     public String getId() {
         return id;

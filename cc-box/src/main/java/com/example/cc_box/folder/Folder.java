@@ -2,7 +2,11 @@ package com.example.cc_box.folder;
 
 import com.google.cloud.firestore.annotation.DocumentId;
 import com.google.cloud.firestore.annotation.ServerTimestamp;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
+@Component
 public class Folder {
     @DocumentId
     private String id;

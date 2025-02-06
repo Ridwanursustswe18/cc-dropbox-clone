@@ -15,21 +15,21 @@ public class FileMetadataService {
 
     private final FileMetadataRepository fileMetadataRepository;
     private final B2Backblaze b2Backblaze;
-
+    private final FileMetadata fileMetadata;
     @Autowired
     public FileMetadataService(
-            FileMetadataRepository fileMetadataRepository, B2Backblaze b2Backblaze)
+            FileMetadataRepository fileMetadataRepository, B2Backblaze b2Backblaze, FileMetadata fileMetadata)
              {
                 this.fileMetadataRepository = fileMetadataRepository;
-
                  this.b2Backblaze = b2Backblaze;
+                 this.fileMetadata = fileMetadata;
              }
 
     public String uploadFile(MultipartFile file, String folderPath, String ownerId, String token)
             throws IOException, InterruptedException, ExecutionException {
         String fileUrl = b2Backblaze.storeFileToB2Backblaze(file,folderPath);
         // 6. Save file metadata locally (or in your DB)
-        FileMetadata fileMetadata = new FileMetadata();
+//        FileMetadata fileMetadata = new FileMetadata();
         fileMetadata.setFileName(file.getOriginalFilename());
         fileMetadata.setFileType(file.getContentType());
         fileMetadata.setFileSize(file.getSize());

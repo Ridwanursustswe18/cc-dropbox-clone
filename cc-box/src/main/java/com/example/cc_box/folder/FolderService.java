@@ -11,9 +11,13 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class FolderService {
-
+    private final FolderRepository folderRepository;
+    private final Folder folder;
     @Autowired
-    private FolderRepository folderRepository;
+    public FolderService(FolderRepository folderRepository, Folder folder) {
+        this.folderRepository = folderRepository;
+        this.folder = folder;
+    }
 
     public Folder createFolder(String name, String parentId, String token) throws Exception {
 
@@ -21,7 +25,7 @@ public class FolderService {
 //        String ownerId = decodedToken.getUid();
         String ownerId = token.startsWith("Bearer ") ? token.substring(7) : token;
         // Create the folder
-        Folder folder = new Folder();
+//        Folder folder = new Folder();
         folder.setId(UUID.randomUUID().toString());
         folder.setName(name);
         folder.setParentId(parentId);
