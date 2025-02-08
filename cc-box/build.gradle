@@ -23,7 +23,7 @@ dependencies {
 //	implementation 'com.h2database:h2'
 	implementation 'com.google.firebase:firebase-admin:9.2.0'
 	implementation 'com.squareup.okhttp3:okhttp:4.10.0'
-
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	// Jackson for JSON parsing
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
 
