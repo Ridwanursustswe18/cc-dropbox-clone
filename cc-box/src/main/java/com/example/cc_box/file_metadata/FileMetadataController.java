@@ -25,11 +25,11 @@ public class FileMetadataController {
     public ResponseEntity<ApiResponse> uploadFile(
             @RequestPart("file") MultipartFile file,
             @RequestPart("folderPath") String folderPath,
-            @RequestPart("ownerId") String ownerId,
             @RequestHeader("Authorization") String authorizationHeader
     ) {
         try {
-            String fileId = fileMetadataService.uploadFile(file, folderPath, ownerId,authorizationHeader);
+            String token = authorizationHeader.substring(7);
+            String fileId = fileMetadataService.uploadFile(file, folderPath,token);
             return ResponseEntity.ok(new ApiResponse(true,"File uploaded successfully with ID: " , fileId));
         } catch (IOException | ExecutionException | InterruptedException e) {
             return ResponseEntity.badRequest().body(new ApiResponse(false, "Error: " + e.getMessage(), null));
@@ -40,14 +40,14 @@ public class FileMetadataController {
     public ResponseEntity<ApiResponse> uploadMultipleFiles(
             @RequestPart("files") List<MultipartFile> files,
             @RequestPart("folderPath") String folderPath,
-            @RequestPart("ownerId") String ownerId,
             @RequestHeader("Authorization") String authorizationHeader
     ) {
         try {
+            String token = authorizationHeader.substring(7);
             List<String> fileIds = files.stream()
                     .map(file -> {
                         try {
-                            return fileMetadataService.uploadFile(file, folderPath, ownerId,authorizationHeader);
+                            return fileMetadataService.uploadFile(file, folderPath,authorizationHeader);
                         } catch (IOException | ExecutionException | InterruptedException e) {
                             throw new RuntimeException(e);
                         }

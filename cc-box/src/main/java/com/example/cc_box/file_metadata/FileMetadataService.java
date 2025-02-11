@@ -25,17 +25,19 @@ public class FileMetadataService {
                  this.fileMetadata = fileMetadata;
              }
 
-    public String uploadFile(MultipartFile file, String folderPath, String ownerId, String token)
+    public String uploadFile(MultipartFile file, String folderPath, String token)
             throws IOException, InterruptedException, ExecutionException {
+       // FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
+//        String ownerId = decodedToken.getUid();
         String fileUrl = b2Backblaze.storeFileToB2Backblaze(file,folderPath);
         // 6. Save file metadata locally (or in your DB)
-//        FileMetadata fileMetadata = new FileMetadata();
+//      FileMetadata fileMetadata = new FileMetadata();
         fileMetadata.setFileName(file.getOriginalFilename());
         fileMetadata.setFileType(file.getContentType());
         fileMetadata.setFileSize(file.getSize());
         fileMetadata.setFilePath(fileUrl);
         fileMetadata.setFolderId(folderPath);
-        fileMetadata.setOwnerId(ownerId);
+        fileMetadata.setOwnerId(token);
 
         // Save and return metadata record id (or any identifier)
         return fileMetadataRepository.saveFileMetadata(fileMetadata);

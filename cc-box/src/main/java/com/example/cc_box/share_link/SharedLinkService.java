@@ -12,9 +12,11 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class SharedLinkService {
     private final SharedLinkRepository sharedLinkRepository;
+    private final SharedLink link;
     @Autowired
-    public SharedLinkService(SharedLinkRepository sharedLinkRepository) {
+    public SharedLinkService(SharedLinkRepository sharedLinkRepository, SharedLink link) {
         this.sharedLinkRepository = sharedLinkRepository;
+        this.link = link;
     }
     public SharedLink createSharedLink(String originalUrl, String loginToken) {
         // Generate a unique token
@@ -23,8 +25,6 @@ public class SharedLinkService {
 //        String ownerId = decodedToken.getUid();
 
         String token = UUID.randomUUID().toString().substring(0, 8);
-
-        SharedLink link = new SharedLink();
         link.setToken(token);
         link.setOriginalUrl(originalUrl);
         link.setOwnerId(ownerId);
