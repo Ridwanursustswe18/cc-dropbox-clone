@@ -1,8 +1,10 @@
-package com.example.cc_box.Utils;// First, create a utility class to handle the conversion
-import org.springframework.stereotype.Component;
+package com.example.cc_box.Utils;
+
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 public class FileToMultipartFileConverter {
@@ -20,8 +22,13 @@ public class FileToMultipartFileConverter {
 
             @Override
             public String getContentType() {
-                // You might want to detect the content type properly
-                return "application/octet-stream";
+                // Dynamically detect the MIME type
+                try {
+                    String mimeType = Files.probeContentType(file.toPath());
+                    return mimeType != null ? mimeType : "application/octet-stream";
+                } catch (IOException e) {
+                    return e.getMessage();
+                }
             }
 
             @Override
