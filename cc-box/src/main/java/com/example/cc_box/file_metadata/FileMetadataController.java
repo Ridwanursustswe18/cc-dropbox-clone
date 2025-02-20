@@ -1,6 +1,7 @@
 package com.example.cc_box.file_metadata;
 
 import com.example.cc_box.Utils.ApiResponse;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -29,9 +31,9 @@ public class FileMetadataController {
     ) {
         try {
             String token = authorizationHeader.substring(7);
-            String fileId = fileMetadataService.uploadFile(file, folderPath,token);
-            return ResponseEntity.ok(new ApiResponse(true,"File uploaded successfully with ID: " , fileId));
-        } catch (IOException | ExecutionException | InterruptedException e) {
+            CompletableFuture<String> fileId = fileMetadataService.uploadFile(file, folderPath,token);
+            return ResponseEntity.ok(new ApiResponse(true,"File uploaded successfully with ID: " , fileId.get()));
+        } catch (IOException | InterruptedException | ExecutionException e) {
             return ResponseEntity.badRequest().body(new ApiResponse(false, "Error: " + e.getMessage(), null));
         }
     }
@@ -44,11 +46,11 @@ public class FileMetadataController {
     ) {
         try {
             String token = authorizationHeader.substring(7);
-            List<String> fileIds = files.stream()
+            @NotNull List<CompletableFuture<String>> fileIds = files.stream()
                     .map(file -> {
                         try {
                             return fileMetadataService.uploadFile(file, folderPath,authorizationHeader);
-                        } catch (IOException | ExecutionException | InterruptedException e) {
+                        } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                     })
