@@ -40,4 +40,19 @@ public class FolderRepository {
                 .map(document -> document.toObject(Folder.class))
                 .collect(Collectors.toList());
     }
+    // Find a folder by name and parent ID
+    public Folder findByNameAndParentId(String folderName, String parentId) throws ExecutionException, InterruptedException {
+        Query query = firestore.collection("folders")
+                .whereEqualTo("name", folderName)
+                .whereEqualTo("parentId", parentId);
+
+        List<QueryDocumentSnapshot> documents = query.get().get().getDocuments();
+
+        if (documents.isEmpty()) {
+            return null; // Folder not found
+        }
+
+        return documents.getFirst().toObject(Folder.class); // Return the first match
+    }
+
 }

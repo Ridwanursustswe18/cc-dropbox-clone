@@ -48,26 +48,25 @@ public class FolderService {
 //        String ownerId = decodedToken.getUid();
         return folderRepository.findByOwnerId(ownerId);
     }
-    public void uploadFolder(String folderPath, String parentFolderId,String token) throws ExecutionException, InterruptedException, IOException {
+    public String uploadFolder(String folderPath, String parentFolderId, String token)
+            throws ExecutionException, InterruptedException, IOException {
 
         File localFolder = new File(folderPath);
         if (!localFolder.exists() || !localFolder.isDirectory()) {
             throw new IllegalArgumentException("Invalid folder path");
         }
 
-        // Create folder metadata
 
         folder.setId(UUID.randomUUID().toString());
-        folder.setName(folderPath);
+        folder.setName(localFolder.getName());
         folder.setParentId(parentFolderId);
         folder.setOwnerId(token);
         folder.setCreatedAt(new Date());
 
-        // Save folder metadata
         folderRepository.save(folder);
 
-        // Process folder contents
-        processFolder(localFolder, folder.getId(),token);
+        processFolder(localFolder, folder.getId(), token);
+        return folder.getId();
     }
     private void processFolder(File content, String parentFolderId, String token) throws ExecutionException, InterruptedException, IOException {
         File[] contents = content.listFiles();

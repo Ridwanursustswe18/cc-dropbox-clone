@@ -56,9 +56,10 @@ public class FolderController {
         try {
             String token = authorizationHeader.substring(7);
 
-            folderService.uploadFolder(folderPath,parentFolderId,token);
+            String id = folderService.uploadFolder(folderPath,parentFolderId,token);
 
             return ResponseEntity.ok(Map.of(
+                    "id",id,
                     "message", "Folder uploaded successfully"
             ));
 

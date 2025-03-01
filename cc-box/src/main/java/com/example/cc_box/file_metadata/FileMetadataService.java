@@ -35,6 +35,7 @@ public class FileMetadataService {
         return b2Backblaze.storeFileToB2Backblaze(copyMultipartFile(file), folderPath)
                 .thenApply(url -> {
                     fileMetadata.setFileName(file.getOriginalFilename());
+
                     fileMetadata.setFileType(file.getContentType());
                     fileMetadata.setFileSize(file.getSize());
                     fileMetadata.setFilePath(url);
