@@ -151,7 +151,7 @@ public class B2Backblaze implements AutoCloseable {
             String uploadAuthToken = uploadData.get("authorizationToken").asText();
 
             File folder = new File(folderPath);
-            String filePath = folder.getName() + "/" + Objects.requireNonNull(file.getOriginalFilename()).replaceFirst("safe_\\d+", "");
+            String filePath = folder.getName() + "/" + Objects.requireNonNull(file.getOriginalFilename());
             String encodedFileName = URLEncoder.encode(filePath, StandardCharsets.UTF_8);
             byte[] fileBytes = file.getBytes();
 

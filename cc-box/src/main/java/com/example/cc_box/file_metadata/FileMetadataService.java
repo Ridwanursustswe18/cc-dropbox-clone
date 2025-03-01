@@ -32,7 +32,7 @@ public class FileMetadataService {
              }
 
     public CompletableFuture<String> uploadFile(MultipartFile file, String folderPath, String token) throws IOException {
-        return b2Backblaze.storeFileToB2Backblaze(copyMultipartFile(file), folderPath)
+        return b2Backblaze.storeFileToB2Backblaze(file, folderPath)
                 .thenApply(url -> {
                     fileMetadata.setFileName(file.getOriginalFilename());
 
