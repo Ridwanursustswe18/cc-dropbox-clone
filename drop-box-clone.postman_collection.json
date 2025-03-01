@@ -1,0 +1,401 @@
+{
+	"info": {
+		"_postman_id": "79fc1f8e-a493-4017-a5e7-769319986fd2",
+		"name": "drop-box-clone",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20973563"
+	},
+	"item": [
+		{
+			"name": "signup",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "//  {\r\n//     \"email\": \"ridwan1@gmail.com\",\r\n//     \"password\": \"1234567\"\r\n//  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/auth/signup?email=ridu@gmail.com&password=1234567",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"signup"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "ridu@gmail.com"
+						},
+						{
+							"key": "password",
+							"value": "1234567"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "signin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/auth/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "folder-create",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyaWR3YW51cjE5NkBnbWFpbC5jb20iLCJpYXQiOjE3Mzg0MDI3NzksImV4cCI6MTczODQ4OTE3OX0.uA1N7aaGDg7pB0Uf2nqf1ywXEwOLNRdpU8tZuQC_GK8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/folders/create?name=new_folder",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"folders",
+						"create"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "new_folder"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "folder-upload",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyaWR3YW51cjE5NkBnbWFpbC5jb20iLCJpYXQiOjE3Mzg0MDI3NzksImV4cCI6MTczODQ4OTE3OX0.uA1N7aaGDg7pB0Uf2nqf1ywXEwOLNRdpU8tZuQC_GK8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer SkInuclHTddS5s94wJA64chKcNS2",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/folders/upload?folderPath=C:/Users/ASUS/Downloads/New folder",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"folders",
+						"upload"
+					],
+					"query": [
+						{
+							"key": "folderPath",
+							"value": "C:/Users/ASUS/Downloads/New folder"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view-folders",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer SkInuclHTddS5s94wJA64chKcNS2",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/folders/SkInuclHTddS5s94wJA64chKcNS2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"folders",
+						"SkInuclHTddS5s94wJA64chKcNS2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "single-upload",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer SkInuclHTddS5s94wJA64chKcNS2",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/ASUS/Downloads/13_ekyc.xlsx"
+						},
+						{
+							"key": "folderPath",
+							"value": "e9542a8b-fa73-41b4-a573-2808cef9ab0e",
+							"type": "text"
+						},
+						{
+							"key": "ownerId",
+							"value": "SkInuclHTddS5s94wJA64chKcNS2",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/files/upload",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"files",
+						"upload"
+					],
+					"query": [
+						{
+							"key": "file",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "multiple-upload",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer SkInuclHTddS5s94wJA64chKcNS2",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "files",
+							"type": "file",
+							"src": [
+								"/C:/Users/ASUS/OneDrive/Pictures/Screenshots 1/Screenshot 2025-02-11 145334.png",
+								"/C:/Users/ASUS/OneDrive/Pictures/Screenshots 1/Screenshot 2025-02-11 145940.png",
+								"/C:/Users/ASUS/OneDrive/Pictures/Screenshots 1/Screenshot 2025-02-12 153556.png"
+							]
+						},
+						{
+							"key": "folderPath",
+							"value": "bf5b8803-78fa-4da0-bdec-4aa98f7f8286",
+							"type": "text"
+						},
+						{
+							"key": "ownerId",
+							"value": "SkInuclHTddS5s94wJA64chKcNS2",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/files/uploadMultiple",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"files",
+						"uploadMultiple"
+					],
+					"query": [
+						{
+							"key": "files",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "folderPath",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "ownerId",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "generate-public-ink",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer SkInuclHTddS5s94wJA64chKcNS2",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"url\": \"http://localhost:8080/api/v1/folders/SkInuclHTddS5s94wJA64chKcNS2\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/share/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"share",
+						"create"
+					],
+					"query": [
+						{
+							"key": "resourceType",
+							"value": "file",
+							"disabled": true
+						},
+						{
+							"key": "resourceId",
+							"value": "F2q6M9KMfDAO2gBxDmyK\n",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "set-folder-sync",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/sync/set-folder?path=C:\\Users\\ASUS\\Downloads\\New folder",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"sync",
+						"set-folder"
+					],
+					"query": [
+						{
+							"key": "path",
+							"value": "C:\\Users\\ASUS\\Downloads\\New folder"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
