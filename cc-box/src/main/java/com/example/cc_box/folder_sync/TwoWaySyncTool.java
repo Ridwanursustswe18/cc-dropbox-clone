@@ -98,17 +98,17 @@ public class TwoWaySyncTool implements ApplicationRunner {
             try {
                 sync(config);
             } catch (Exception e) {
-                logger.error("Error syncing folder: " + path, e);
+                logger.error("Error syncing folder: {}", path, e);
             }
         });
         logger.info("Scheduled sync completed.");
     }
 
-    private CompletableFuture<Void> sync(SyncConfig config) throws IOException {
+    private void sync(SyncConfig config) throws IOException {
         logger.info("Syncing folder: {}", config.localRoot);
         Map<String, Path> localFiles = listLocalFiles(config.localRoot);
 
-        return client.listFiles(config.folderId)
+        client.listFiles(config.folderId)
                 .thenCompose(remoteFiles -> {
                     List<CompletableFuture<Void>> tasks = new ArrayList<>();
                     logger.debug("Remote files found: {} files", remoteFiles.size());
@@ -152,19 +152,16 @@ public class TwoWaySyncTool implements ApplicationRunner {
             logger.info("Uploading new local file: {}", relativePath);
             uploadFile(localFile, config, tasks);
             lastModifiedCache.put(relativePath, currentLastModified);
-        } else {
-            Date remoteCreatedAt = remoteMeta.getCreatedAt();
-            if (remoteCreatedAt == null || currentLastModified > remoteCreatedAt.getTime()) {
-                logger.info("Uploading modified local file: {}", relativePath);
-                uploadFile(localFile, config, tasks);
-                lastModifiedCache.put(relativePath, currentLastModified);
-            } else if (remoteCreatedAt.getTime() > currentLastModified) {
-                String fullRemotePath = config.folderId + (relativePath.startsWith("/") ? relativePath : "/" + relativePath);
-                logger.info("Downloading newer remote file: {}", fullRemotePath);
-                downloadFile(fullRemotePath, localFile.toFile(), config, tasks);
-
-            }
         }
+//        else {
+//            Date remoteCreatedAt = remoteMeta.getCreatedAt();
+//             if (remoteCreatedAt.getTime() > currentLastModified) {
+//                String fullRemotePath = config.folderId + (relativePath.startsWith("/") ? relativePath : "/" + relativePath);
+//                logger.info("Downloading newer remote file: {}", fullRemotePath);
+//                downloadFile(fullRemotePath, localFile.toFile(), config, tasks);
+//
+//            }
+//        }
     }
 
     private void uploadFile(Path localFile, SyncConfig config, List<CompletableFuture<Void>> tasks) throws IOException {
@@ -185,13 +182,8 @@ public class TwoWaySyncTool implements ApplicationRunner {
         }
 
         logger.info("Starting download of '{}' to '{}'", remotePath, localFile.getAbsolutePath());
-
-        // Construct the full path using folderId and remotePath
         String fullPath = config.folderId + "/" + remotePath;
-
-        // Normalize the path (remove leading slash if present)
         String normalizedPath = fullPath.startsWith("/") ? fullPath.substring(1) : fullPath;
-
         CompletableFuture<Void> downloadTask = client.downloadFile(normalizedPath, localFile)
                 .thenRun(() -> {
                     logger.info("Successfully downloaded: '{}' to '{}'", normalizedPath, localFile.getAbsolutePath());

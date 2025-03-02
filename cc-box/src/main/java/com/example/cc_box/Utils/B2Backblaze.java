@@ -211,12 +211,12 @@ public class B2Backblaze implements AutoCloseable {
     public CompletableFuture<Map<String, FileMetadata>> listFiles(String folderId) {
         return authenticate()
                 .thenCompose(auth -> {
+                    // This part stays the same
                     ObjectNode payload = mapper.createObjectNode()
                             .put("bucketId", bucketId)
                             .put("maxFileCount", 1000)
                             .putNull("startFileName")
                             .put("prefix", folderId.endsWith("/") ? folderId : folderId + "/");
-
                     Request request = null;
                     try {
                         request = new Request.Builder()
@@ -228,17 +228,39 @@ public class B2Backblaze implements AutoCloseable {
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
-
                     return makeAsyncCall(request)
                             .thenApply(response -> {
                                 try {
                                     Map<String, FileMetadata> filesMap = new HashMap<>();
                                     JsonNode listJson = mapper.readTree(response);
+                                    // Add debug info
+                                    logger.debug("Raw file list response: {}", listJson);
+                                    logger.debug("Found {} remote files", listJson.get("files").size());
 
                                     for (JsonNode fileNode : listJson.get("files")) {
                                         String remoteKey = fileNode.get("fileName").asText();
-                                        String relativePath = remoteKey.substring(
-                                                remoteKey.startsWith(folderId) ? folderId.length() : 0);
+                                        logger.debug("Processing remote file: {}", remoteKey);
+
+                                        // Get prefix to strip
+                                        String prefix = folderId.endsWith("/") ? folderId : folderId + "/";
+
+                                        // Extract relativePath and normalize it (remove leading slash)
+                                        String relativePath = "";
+                                        if (remoteKey.startsWith(prefix)) {
+                                            relativePath = remoteKey.substring(prefix.length());
+                                        } else if (remoteKey.startsWith(folderId)) {
+                                            relativePath = remoteKey.substring(folderId.length());
+                                            // If we have a leading slash, remove it
+                                            if (relativePath.startsWith("/")) {
+                                                relativePath = relativePath.substring(1);
+                                            }
+                                        } else {
+                                            // Fallback case - shouldn't happen if prefix filtering works correctly
+                                            relativePath = remoteKey;
+                                        }
+
+                                        // Log the normalization for debugging
+                                        logger.debug("Mapped remote file '{}' to relative path '{}'", remoteKey, relativePath);
 
                                         FileMetadata metadata = fileMetadataFactory.getObject();
                                         metadata.setFileName(relativePath);
