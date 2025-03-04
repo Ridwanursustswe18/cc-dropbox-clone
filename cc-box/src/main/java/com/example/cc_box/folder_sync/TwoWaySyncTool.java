@@ -168,7 +168,7 @@ public class TwoWaySyncTool implements ApplicationRunner {
         MultipartFile multipartFile = FileToMultipartFileConverter.convert(localFile.toFile());
         tasks.add(CompletableFuture.runAsync(() -> {
             try {
-                fileMetadataService.uploadFile(multipartFile, config.folderId, config.authToken);
+                fileMetadataService.uploadFile(multipartFile.getBytes(),multipartFile.getOriginalFilename(),multipartFile.getContentType(), multipartFile.getSize(), config.folderId, config.authToken);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to upload file: " + localFile, e);
             }

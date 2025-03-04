@@ -114,7 +114,7 @@ public class B2Backblaze implements AutoCloseable {
     }
 
     @Async
-    public CompletableFuture<String> storeFileToB2Backblaze(MultipartFile file, String folderPath) {
+    public CompletableFuture<String> storeFileToB2Backblaze(byte[] fileBytes, String fileName, String folderPath) {
         return authenticate()
                 .thenCompose(auth -> {
                     try {
@@ -123,8 +123,26 @@ public class B2Backblaze implements AutoCloseable {
                         throw new RuntimeException(e);
                     }
                 })
-                .thenCompose(uploadData -> uploadFile(uploadData, file, folderPath))
+                .thenCompose(uploadData -> uploadFile(uploadData, fileBytes, fileName, folderPath))
                 .thenCompose(this::generateDownloadUrl);
+    }
+
+    private CompletableFuture<String> uploadFile(JsonNode uploadData, byte[] fileBytes, String fileName, String folderPath) {
+        String uploadUrl = uploadData.get("uploadUrl").asText();
+        String uploadAuthToken = uploadData.get("authorizationToken").asText();
+        String filePath = folderPath + "/" + fileName;
+        String encodedFileName = URLEncoder.encode(filePath, StandardCharsets.UTF_8);
+
+        Request request = new Request.Builder()
+                .url(uploadUrl)
+                .header("Authorization", uploadAuthToken)
+                .header("X-Bz-File-Name", encodedFileName)
+                .header("Content-Type", "b2/x-auto")
+                .header("X-Bz-Content-Sha1", DigestUtils.sha1Hex(fileBytes))
+                .post(RequestBody.create(fileBytes, MediaType.parse("application/octet-stream")))
+                .build();
+
+        return makeAsyncCall(request);
     }
 
     private CompletableFuture<JsonNode> getUploadUrl(B2AuthData auth) throws JsonProcessingException {
@@ -145,30 +163,6 @@ public class B2Backblaze implements AutoCloseable {
                 });
     }
 
-    private CompletableFuture<String> uploadFile(JsonNode uploadData, MultipartFile file, String folderPath) {
-        try {
-            String uploadUrl = uploadData.get("uploadUrl").asText();
-            String uploadAuthToken = uploadData.get("authorizationToken").asText();
-
-            File folder = new File(folderPath);
-            String filePath = folder.getName() + "/" + Objects.requireNonNull(file.getOriginalFilename());
-            String encodedFileName = URLEncoder.encode(filePath, StandardCharsets.UTF_8);
-            byte[] fileBytes = file.getBytes();
-
-            Request request = new Request.Builder()
-                    .url(uploadUrl)
-                    .header("Authorization", uploadAuthToken)
-                    .header("X-Bz-File-Name", encodedFileName)
-                    .header("Content-Type", "b2/x-auto")
-                    .header("X-Bz-Content-Sha1", DigestUtils.sha1Hex(fileBytes))
-                    .post(RequestBody.create(fileBytes, MediaType.parse("application/octet-stream")))
-                    .build();
-
-            return makeAsyncCall(request);
-        } catch (IOException e) {
-            return CompletableFuture.failedFuture(e);
-        }
-    }
 
     private CompletableFuture<String> generateDownloadUrl(String uploadResponse) {
         return authenticate()
@@ -211,7 +205,6 @@ public class B2Backblaze implements AutoCloseable {
     public CompletableFuture<Map<String, FileMetadata>> listFiles(String folderId) {
         return authenticate()
                 .thenCompose(auth -> {
-                    // This part stays the same
                     ObjectNode payload = mapper.createObjectNode()
                             .put("bucketId", bucketId)
                             .put("maxFileCount", 1000)

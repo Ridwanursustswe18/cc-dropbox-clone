@@ -31,7 +31,7 @@ public class FileMetadataController {
     ) {
         try {
             String token = authorizationHeader.substring(7);
-            CompletableFuture<String> fileId = fileMetadataService.uploadFile(file, folderPath,token);
+            CompletableFuture<String> fileId = fileMetadataService.uploadFile(file.getBytes(), file.getOriginalFilename(), file.getContentType(), file.getSize(), folderPath,token);
             return ResponseEntity.ok(new ApiResponse(true,"File uploaded successfully with ID: " , fileId.get()));
         } catch (IOException | InterruptedException | ExecutionException e) {
             return ResponseEntity.badRequest().body(new ApiResponse(false, "Error: " + e.getMessage(), null));
@@ -46,17 +46,33 @@ public class FileMetadataController {
     ) {
         try {
             String token = authorizationHeader.substring(7);
-            @NotNull List<CompletableFuture<String>> fileIds = files.stream()
+            List<CompletableFuture<String>> futures = files.stream()
                     .map(file -> {
                         try {
-                            return fileMetadataService.uploadFile(file, folderPath,authorizationHeader);
+                            byte[] fileBytes = file.getBytes();
+                            String fileName = file.getOriginalFilename();
+                            String fileType = file.getContentType();
+                            long fileSize = file.getSize();
+                            return fileMetadataService.uploadFile(
+                                    fileBytes, fileName, fileType, fileSize, folderPath, token
+                            );
                         } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            throw new RuntimeException("Failed to read file: " + e.getMessage(), e);
                         }
                     })
                     .collect(Collectors.toList());
+            CompletableFuture<Void> allFutures = CompletableFuture.allOf(
+                    futures.toArray(new CompletableFuture[0])
+            );
 
-            return ResponseEntity.ok(new ApiResponse(true,"Files uploaded successfully: " , fileIds));
+            CompletableFuture<List<String>> results = allFutures.thenApply(v ->
+                    futures.stream()
+                            .map(CompletableFuture::join)
+                            .collect(Collectors.toList())
+            );
+
+            List<String> fileUrls = results.get();
+            return ResponseEntity.ok(new ApiResponse(true, "Files uploaded successfully", fileUrls));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(false, "Error: " + e.getMessage(), null));
         }

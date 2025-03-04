@@ -31,20 +31,18 @@ public class FileMetadataService {
                  this.fileMetadata = fileMetadata;
              }
 
-    public CompletableFuture<String> uploadFile(MultipartFile file, String folderPath, String token) throws IOException {
-        return b2Backblaze.storeFileToB2Backblaze(file, folderPath)
+    public CompletableFuture<String> uploadFile(byte[] fileBytes, String fileName, String fileType, long fileSize, String folderPath, String token) {
+        return b2Backblaze.storeFileToB2Backblaze(fileBytes, fileName, folderPath)
                 .thenApply(url -> {
-                    fileMetadata.setFileName(file.getOriginalFilename());
-
-                    fileMetadata.setFileType(file.getContentType());
-                    fileMetadata.setFileSize(file.getSize());
+                    fileMetadata.setFileName(fileName);
+                    fileMetadata.setFileType(fileType);
+                    fileMetadata.setFileSize(fileSize);
                     fileMetadata.setFilePath(url);
                     fileMetadata.setFolderId(folderPath);
                     fileMetadata.setOwnerId(token);
                     return url;
                 })
-                .thenCompose(url -> CompletableFuture.supplyAsync(() ->
-                {
+                .thenCompose(url -> CompletableFuture.supplyAsync(() -> {
                     try {
                         return fileMetadataRepository.saveFileMetadata(fileMetadata);
                     } catch (ExecutionException | InterruptedException e) {

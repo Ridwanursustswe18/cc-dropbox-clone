@@ -84,7 +84,7 @@ public class FolderService {
                     processFolder(item, folder.getId(),token);
                 } else {
                     MultipartFile multipartFile = FileToMultipartFileConverter.convert(item);
-                    fileMetadataService.uploadFile(multipartFile, parentFolderId, token);
+                    fileMetadataService.uploadFile(multipartFile.getBytes(), multipartFile.getName(), multipartFile.getContentType(), multipartFile.getSize(), parentFolderId, token);
 
                 }
             }
